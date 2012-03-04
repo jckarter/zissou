@@ -4,13 +4,13 @@ ui ui.gadgets.worlds ui.tools.listener wolfram-alpha namespaces ;
 IN: zissou
 
 CONSTANT: title-style
-    H{ { font-name "Futura" } { font-size 86 } }
+    H{ { font-name "Futura" } { font-size 116 } }
 
 CONSTANT: header-style
-    H{ { font-name "Futura" } { font-size 48 } }
+    H{ { font-name "Futura" } { font-size 64 } }
 
 CONSTANT: bullet-style
-    H{ { font-name "Palatino" } { font-size 27 } }
+    H{ { font-name "Palatino" } { font-size 36 } }
 
 : zoom ( n -- )
     [ listener-gadget? ] find-window set-world-scale ;
@@ -43,24 +43,36 @@ CONSTANT: slides {
         "postfix syntax, static dataflow"
         "native code compiler"
         "interactive, reflective environment"
+        "highly metaprogrammable"
+        "goal: \"outlisp lisp\""
     }
     "What's good" {
         "interactivity"
+        "metaprogramming support"
         "native integration"
         "performance"
         "explorable internals"
         "batteries included"
     }
         "Interactivity" {
-            "perfect code reloading"
+            "\"perfect\" code reloading"
             "developer tools"
             "rich UI"
         }
+        "Metaprogramming" {
+            "homoiconic"
+            "extensible syntax"
+            "CTFE through \"macros\""
+            "reflection"
+        }
         "Native integration" {
+            "image based"
+            "but canonical source is in filesystem"
+            "UI integrates with your text editor"
             "standalone deployment"
             "foreign function interface"
-            "process library"
             "advanced OS features"
+            "support windows and unix-likes equally"
         }
         "Performance" {
             "ffi + compiler support for C types"
@@ -75,6 +87,12 @@ CONSTANT: slides {
             "query functions"
             "compiler test functions"
         }
+        "Batteries included" {
+            "lots of library functions"
+            "web framework"
+            "game framework"
+            "webapp interfaces"
+        }
     "What sucks" {
         "concatenative syntax"
         "reader macros"
@@ -82,6 +100,7 @@ CONSTANT: slides {
         "concurrency-ignorant"
         "change without migration"
         "too many batteries"
+        "documentation"
     }
         "Concatenative" {
             "concise sometimes, but..."
@@ -118,6 +137,11 @@ CONSTANT: slides {
             "too much code intimidates new users"
             "uneven code quality gives bad impressions"
             "package management is a necessity"
+        }
+        "Documentation" {
+            "all the reference docs in the world"
+            "useless without good introductory material"
+            "searchable, but not enough"
         }
     "The End" {
         "jckarter/zissou@master:references.md"
