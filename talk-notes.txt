@@ -1,0 +1,191 @@
+Topic
+- [ ] title
+    - [ ] reset.
+    - [ ] title.
+    - [ ] I'm Joe Groff
+    - [ ] been working on Factor since 2007
+    - [ ] i know you want to design and implement your own languages so
+          i thought i'd give a postmortem sort of talk
+    - [ ] things i think are cool and should be emulated
+    - [ ] things that don't work and should be avoided
+    - [ ] These slides are up on my github, with references
+    - [ ] slides written in factor, using the factor repl, i'll be
+          typing factor code as i go
+    - [ ] if you feel like something needs elaboration or need to see a
+          slide again, don't be afraid to ask
+- [ ] background
+    - [ ] on the surface stack-based language (forth, postscript, hp48)
+    - [ ] "concatenative" more academic sounding term
+    - [ ] original and main author Slava Pestov, 2004-2011
+    - [ ] Being stack based, dataflow happens primarily through a data
+          stack. Inputs are pushed onto the stack
+        - [ ] 1
+        - [ ] 2
+    - [ ] and then a function like "+"
+        - [ ] +
+    - [ ] consumes its inputs off the top of the stack and pushes its
+          output "3" onto the stack in their place. You can then use
+          that output as the input to another function like "sq"
+        - [ ] sq
+    - [ ] and get the output "9" as a result.
+    - [ ] repeat
+    - [ ] Factor is different from other stack languages in a few ways:
+        - [ ] Unlike most other stack-based languages, Factor requires
+              static data flow. functions must have a well-defined
+              number of inputs and outputs, so you must use explicit
+              datastructures such as arrays and hashtables instead of
+              treating stack as datastructure. This gives Factor a bit
+              different feel from other stack languages; programming
+              Factor feels much more like programming a functional
+              language
+        - [ ] aside from encouraging functional style, static dataflow
+              also makes factor much easier to optimize than dynamic
+              stack languages, allowing factor to have a fairly
+              competitive native code optimizing compiler.
+        - [ ] Going past the surface syntax, Factor borrows much more
+              from Lisp and Smalltalk than it does from Forth.
+              Development is image-based: this UI I'm typing into, the
+              slides, and the other libraries are all resident in an
+              image that contains compiled code and metadata.
+        - [ ] Factor is homoiconic—code is data, and code is parsed
+              into live objects like in Lisp
+        - [ ] thanks to those features, has good metaprogramming
+              support, including syntax extension and code introspection
+- [ ] good parts
+    - [ ] Keeping with tradition, I'll start with the good news. there
+          are three key things factor does uniquely well as a language
+          implementation
+    - [ ] environment with great support for interactive development
+    - [ ] does so avoiding the temptation to reinvent the world and
+          integrates with existing native tools
+    - [ ] factor makes it very easy to explore its own implementation
+- [ ] interactivity
+    - [ ] if you've read anything about forth, lisp, or smalltalk, you
+          know the benefits
+    - [ ] you can explore libraries and figure out how they work in
+          practice
+    - [ ] you can easily test
+    - [ ] you can modify code on-line as it's running
+- [ ] factor's interactivity
+    - [ ] ui designed around interactive development
+    - [ ] repl prints live objects—if i enter an object like the array
+        - [ ] { 1 2 3 }
+    - [ ] i can click on it to bring up an inspector, edit it in place
+    - [ ] if i print an object with '.' and take it off the stack, i
+          can also use context menu to push it back onto the datastack
+    - [ ] i can also "see" the definition of a function like "sq"
+        - [ ] \ sq see
+    - [ ] and clicking a component function brings up help for that
+          function
+    - [ ] listener and inspector also support rich representations of
+          media objects
+        - [ ] "vocab:zissou/resources/coin.wav" read-audio
+        - [ ] "vocab:zissou/resources/cat.png" load-image
+    - [ ] walker allows code to be stepped through
+- [ ] native integration
+    - [ ] although factor has this UI suite, it makes an effort to
+          reuse native tools where it makes sense
+    - [ ] factor keeps compiled code and metadata in its image, but the
+          canonical representation is source files on disk
+    - [ ] this allows you to use your existing text editor, shell
+          tools, version control, etc.
+    - [ ] factor makes this work through its support for near-perfect
+          code reloading
+    - [ ] monitors filesystem for changes to factor files, and reloads
+          changed files, taking dependency information into account, so
+          that even complicated multi-file changes get accurately and
+          automatically reflected in the image
+    - [ ] UI does not try to be a full-fledged editor but instead
+          provides plugins to call out to your text editor
+    - [ ] FFI allows calls out to C libraries, also supports component
+          models such as gobject, com, and objective-c
+    - [ ] factor can generate standalone, single-file deployed apps of
+          reasonable size
+- [ ] explorable internals
+    - [ ] factor is mostly implemented in itself
+    - [ ] that combined with the UI tools and a good stable of query
+          functions makes a factor system very easy to explore
+- [ ] bad parts
+    - [ ] now, the bad news
+    - [ ] factor has a number of issues both as a language and as a
+          project you should avoid in your own projects
+    - [ ] after working with it for a while, i'd say stack syntax has
+          more drawbacks than benefits
+    - [ ] a lot of development effort in factor was sunk into
+          reinventing things that could be avoided today
+    - [ ] monolithic distribution, lack of package system discouraged
+          contributors
+    - [ ] we wrote lots of documentation, but didn't spend enough time
+          organizing it and providing introductory material 
+- [ ] stack syntax
+    - [ ] the traditional defenses of forth have been that forth is
+          concise and that it encourages short, well-factored function
+          definitions
+    - [ ] but it's hard to write in that style fluently, it takes a lot
+          of thinking to line things up optimally, and the resulting
+          code is often impossible to read later
+    - [ ] the unfamiliar syntax chases off lots of interested users
+    - [ ] making the parameter passing implicit means your code breaks
+          in if you need to add or remove parameters
+    - [ ] named variables can improve the conciseness of code. there
+          was a post "bytecode languages for tiny computers" on the
+          squeak mailing list that i have a link to in my references
+          that demonstrates that a register-based VM can produce more
+          space-efficient bytecode than a forth VM
+- [ ] reinvented wheels
+    - [ ] to factor's credit, back in 2004, language middleware wasn't
+          as advanced as it is now and many of these projects wouldn't
+          have been viable at the time
+    - [ ] but over time a few subsystems became disproportionate dev
+          time sinks
+    - [ ] factor's UI is built on top of OpenGL, which is a bad idea—gl
+          drivers constantly have bugs, opengl is too low-level
+    - [ ] even fundamental aspects of UI implementation like text
+          rendering are nontrivial
+    - [ ] using an HTML renderer like WebKit solves many of the boring
+          hard problems of UI development for you, and everybody knows
+          HTML
+    - [ ] factor's compiler is a custom architecture developed by slava
+    - [ ] which is cool because slava is into compiler design, and it's
+          an impressive bit of work for one person
+    - [ ] but a small team can never compete with the amount of work
+          put into large-scale projects like LLVM
+    - [ ] Factor was originally a JVM language, switched because of JVM
+          limitations for optimizing dynamic languages, but the modern
+          JVM and CLR have much better dynamic language support
+    - [ ] factor implements its own cross-platform evented IO
+          multiplexer. these days libuv gives you that for free
+- [ ] package system
+    - [ ] factor comes as a monolithic distribution that includes 99%
+          of all factor code ever written, and we encouraged users to
+          submit their libraries into the factor distribution
+    - [ ] this approach is great for a small community—everybody can
+          see what everybody else is doing, and we could make changes
+          to the core language and update people's code for them
+    - [ ] however, it doesn't scale, and factor's inability to
+          transition out of the monolith has limited the size of the
+          community for a number of reasons
+    - [ ] not everyone wants to develop within the monolith. people
+          want to be able to write their own scripts and programs
+          locally, and factor makes that difficult
+    - [ ] users are intimidated by the sheer volume of code that comes
+          with factor
+    - [ ] and the 
+    - [ ] developers have come to expect quality package managers; gem
+          and npm are key features that have driven adoption and
+          library proliferation for ruby and node
+- [ ] documentation
+    - [ ] #1 complaint about factor is that there's no documentation
+    - [ ] [ all-words [ print-topic ] each ] with-string-writer length
+    - [ ] there is lots of documentation, but it's mostly reference docs
+    - [ ] without introductory text, there are no toeholds for users to
+          get a start with
+- [ ] similar languages
+    - [ ] i'll close out by referencing some languages that capture
+          some of the same spirit as factor
+    - [ ] SBCL and Squeak are open-source implementations of Common
+          Lisp and Smalltalk, two of the main influences on Factor
+    - [ ] Racket is a Scheme variant with a rich development UI much
+          like Factor's 
+    - [ ] Julia is a new language intended as a matlab replacement
+          based on LLVM with 
